@@ -93,9 +93,10 @@ void cadastrar_investidor() {
 }
 // Excluir investidores
 void excluir_investidor() {
+    char confirmacao;
     char cpf_excluir[12];
     printf("Digite o CPF do investidor a ser deletado: ");
-    scanf("%11s", cpf_excluir);  
+    scanf("%s", cpf_excluir);
 
     int encontrado = -1;
     for (int i = 0; i < total_investidores; i++) {
@@ -104,24 +105,45 @@ void excluir_investidor() {
             break;
         }
     }
+
     if (encontrado == -1) {
-        printf("O Investidor não existe.\n");
+        printf(" O Investidor não foi encontrado.\n");
         return;
     }
 
-    for (int i = encontrado; i < total_investidores - 1; i++) {
-        strcpy(cpfs[i], cpfs[i + 1]);
-        strcpy(senhas[i], senhas[i + 1]);
-        strcpy(nomes[i], nomes[i + 1]);
-        reais[i] = reais[i + 1];
-        bitcoin[i] = bitcoin[i + 1];
-        ethereum[i] = ethereum[i + 1];
-        ripple[i] = ripple[i + 1];
-    }
+    printf("\nInvestidor encontrado:\n");
+    printf("Nome: %s\n", nomes[encontrado]);
+    printf("CPF: %s\n", cpfs[encontrado]);
+    printf("Saldo em Reais: %.2f\n", reais[encontrado]);
+    printf("Saldo em Bitcoin: %.4f\n", bitcoin[encontrado]);
+    printf("Saldo em Ethereum: %.4f\n", ethereum[encontrado]);
+    printf("Saldo em Ripple: %.4f\n", ripple[encontrado]);
 
-    total_investidores--;
-    printf("Investidor excluído.\n");
+    while (getchar() != '\n'); // Limpa o buffer
+    printf("\nDeseja realmente excluir o investidor? (S/N): ");
+    scanf("%c", &confirmacao);
+
+    if (confirmacao == 'S' || confirmacao == 's'){
+        // Desloca os elementos do array para excluir o investidor
+        for (int i = encontrado; i < total_investidores - 1; i++) {
+            strcpy(cpfs[i], cpfs[i + 1]);
+            strcpy(senhas[i], senhas[i + 1]);
+            strcpy(nomes[i], nomes[i + 1]);
+            reais[i] = reais[i + 1];
+            bitcoin[i] = bitcoin[i + 1];
+            ethereum[i] = ethereum[i + 1];
+            ripple[i] = ripple[i + 1];
+        }
+        total_investidores--;
+        printf("Investidor excluído com sucesso.\n");
+    } else if (confirmacao == 'N' || confirmacao == 'n'){
+        printf("Exclusão cancelada.\n");
+    } else {
+        printf("Opção inválida.\n");
+    }
 }
+
+
 
 // Menu gerente
 void menu_gerente() {
