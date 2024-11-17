@@ -143,6 +143,7 @@ void menu_gerente() {
                 excluir_criptomoeda();
                 break;
             case 5:
+                consultar_saldo_geral();
                 break;
             case 6:
                 printf("==----------------------------==\n");
@@ -150,6 +151,20 @@ void menu_gerente() {
             default:
                 printf("Opção inválida.\n");
         }
+    }
+}
+// Consulta do gerente
+void consultar_saldo_geral() {
+    printf("==----------------------------==\n");
+    printf("Saldos gerais:\n");
+    for (int i = 0; i < total_investidores; i++) {
+        printf("Nome: %s\n", nomes[i]);
+        printf("CPF: %s\n", cpfs[i]);
+        printf("Reais (R$): %.2f\n", reais[i]);
+        printf("Bitcoin (BTC): %.6f\n", bitcoin[i]);
+        printf("Ethereum (ETH): %.6f\n", ethereum[i]);
+        printf("Ripple (XRP): %.6f\n", ripple[i]);
+        printf("==----------------------------==\n");
     }
 }
 
