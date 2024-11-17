@@ -14,6 +14,15 @@ typedef struct {
     float taxa_venda;
 } Criptomoeda;
 
+// Armazenar a quantidade de cada criptomoeda
+typedef struct {
+    float quantidade;
+    char nome[50];
+} QuantidadeCriptomoeda;
+
+// Armazenar quantidades de criptomoedas 
+QuantidadeCriptomoeda saldo_criptomoedas[MAX_INVESTIDORES][MAX_CRIPTOMOEDAS];
+
 Criptomoeda criptomoedas[MAX_CRIPTOMOEDAS];
 int total_criptomoedas = 0;
 
@@ -171,7 +180,7 @@ void consultar_saldo_geral() {
 // Consultar saldo investidor
 void consultar_saldo(int cliente) {
     char senha_acesso_saldo[7]; 
-    while (1) {  // Laço de validação
+    while (1) {  
         printf("Digite sua senha: ");
         scanf("%s", senha_acesso_saldo);
         if (strcmp(senhas[cliente], senha_acesso_saldo) == 0) {
@@ -183,9 +192,13 @@ void consultar_saldo(int cliente) {
                 cpfs[cliente][6], cpfs[cliente][7], cpfs[cliente][8],
                 cpfs[cliente][9], cpfs[cliente][10]);
             printf("\nReais (R$): %.2f\n", reais[cliente]);
-            printf("Bitcoin (BTC): %.6f\n", bitcoin[cliente]);
-            printf("Ethereum (ETH): %.6f\n", ethereum[cliente]);
-            printf("Ripple (XRP): %.6f\n", ripple[cliente]);
+            printf("Criptomoedas:\n");
+
+            // Saldo de cada criptomoeda
+            for (int i = 0; i < total_criptomoedas; i++) {
+                printf("%s: %.6f\n", criptomoedas[i].nome, saldo_criptomoedas[cliente][i].quantidade);
+            }
+
             return;
         } else {
             printf("Senha incorreta. Digite novamente.\n");
@@ -194,7 +207,7 @@ void consultar_saldo(int cliente) {
 }
 
 
-// Cadastrar criptomoedas
+// Cadastrar criptos
 void cadastrar_criptomoedas() {
     if (total_criptomoedas >= MAX_CRIPTOMOEDAS) {
         printf("Limite de criptomoedas atingido.\n");
@@ -212,15 +225,26 @@ void cadastrar_criptomoedas() {
     scanf("%f", &nova.taxa_venda);
 
     criptomoedas[total_criptomoedas] = nova;
+    
+    // Nova cripto disponivel pra o investidor 
+    for (int i = 0; i < total_investidores; i++) {
+        saldo_criptomoedas[i][total_criptomoedas].quantidade = 0;
+        strcpy(saldo_criptomoedas[i][total_criptomoedas].nome, nova.nome);
+    }
+
     total_criptomoedas++;
     printf("Criptomoeda cadastrada com sucesso!\n");
 }
 
-// Excluir criptomoeda
-void excluir_criptomoeda() {
+
+// EXCLUSÃO DE CRIPTOMOEDAS
+void excluir_criptomoeda(){
     char nome_excluir[50];
-    printf("Digite o nome da criptomoeda: ");
+    char confirmacao;
+
+    printf("Digite o nome da criptomoeda a ser excluída: ");
     scanf(" %[^\n]", nome_excluir);
+
     int encontrado = -1;
     for (int i = 0; i < total_criptomoedas; i++) {
         if (strcmp(criptomoedas[i].nome, nome_excluir) == 0) {
@@ -233,13 +257,30 @@ void excluir_criptomoeda() {
         printf("Criptomoeda não encontrada.\n");
         return;
     }
-    for (int i = encontrado; i < total_criptomoedas - 1; i++) {
-        criptomoedas[i] = criptomoedas[i + 1];
-    }
-    total_criptomoedas--;
-    printf("Criptomoeda excluída com sucesso.\n");
-}
 
+    printf("\nCriptomoeda encontrada:\n");
+    printf("Nome: %s\n", criptomoedas[encontrado].nome);
+    printf("Cotação inicial: %.2f\n", criptomoedas[encontrado].cotacao_inicial);
+    printf("Taxa de compra: %.2f\n", criptomoedas[encontrado].taxa_compra);
+    printf("Taxa de venda: %.2f\n", criptomoedas[encontrado].taxa_venda);
+
+    // Limpa buffer antes de ler confirmação
+    while (getchar() != '\n');
+    printf("\nDeseja realmente excluir a criptomoeda? (S/N): ");
+    scanf("%c", &confirmacao);
+
+    if (confirmacao == 'S' || confirmacao == 's') {
+        for (int i = encontrado; i < total_criptomoedas - 1; i++) {
+            criptomoedas[i] = criptomoedas[i + 1];
+        }
+        total_criptomoedas--;
+        printf("Criptomoeda excluída com sucesso.\n");
+    } else if (confirmacao == 'N' || confirmacao == 'n') {
+        printf("Exclusão cancelada.\n");
+    } else {
+        printf("Opção inválida.\n");
+    }
+}
 
 
 void salvar_saldos() {
